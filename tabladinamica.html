@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Dinámica con Registros</title>
+</head>
+<body>
+    <h1>Tabla de Registros Dinámicos</h1>
+
+    <!-- Tabla donde se agregarán los registros -->
+    <table id="dynamicTable" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Detalle</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas se agregarán dinámicamente aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        // Función para generar un UUID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = (Math.random() * 16) | 0;
+                const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                return v.toString(16);
+            });
+        }
+
+        // Función para alternar la posición de la fila de formulario (arriba o abajo)
+        function toggleFormPosition() {
+            const tableBody = document.querySelector("#dynamicTable tbody");
+            const existingForm = document.getElementById("formRow");
+            const formRow = createFormRow(); // Crear una nueva fila de formulario con IDs y clases dinámicas
+
+            // Alternar la posición entre la parte superior o inferior
+            const shouldMoveToTop = Math.random() > 0.5; // 50% de probabilidad para mover al principio o final
+
+            // Si ya existe una fila de formulario, eliminarla
+            if (existingForm) {
+                existingForm.remove(); 
+            }
+
+            // Insertar la fila de formulario en la posición aleatoria
+            if (shouldMoveToTop) {
+                tableBody.prepend(formRow); // Insertar al principio
+            } else {
+                tableBody.appendChild(formRow); // Insertar al final
+            }
+        }
+
+        // Función para crear la fila de formulario con ID y clase dinámica
+        function createFormRow() {
+            const uniqueId = generateUUID(); // Generar ID único para la fila
+            const formRow = document.createElement("tr");
+            formRow.id = `formRow`;
+            formRow.className = `form-row-${uniqueId}`;
+
+            formRow.innerHTML = `
+                <td></td>
+                <td><input type="text" id="newName-${uniqueId}" placeholder="Ingrese el nombre"></td>
+                <td><input type="text" id="newDetail-${uniqueId}" placeholder="Ingrese el detalle"></td>
+                <td><button id="saveBtn-${uniqueId}" onclick="saveRow('${uniqueId}')">Guardar</button></td>
+            `;
+            return formRow;
+        }
+
+        // Función para guardar el nuevo registro
+        function saveRow(uniqueId) {
+            const nameInput = document.getElementById(`newName-${uniqueId}`);
+            const detailInput = document.getElementById(`newDetail-${uniqueId}`);
+            const name = nameInput.value;
+            const detail = detailInput.value;
+
+            if (name && detail) {
+                const tableBody = document.querySelector("#dynamicTable tbody");
+
+                // Crear una nueva fila con los datos ingresados
+                const newRow = document.createElement("tr");
+                newRow.className = `row-${uniqueId}`;
+                newRow.innerHTML = `
+                    <td id="id-${uniqueId}">${tableBody.rows.length + 1}</td>
+                    <td class="name-cell">${name}</td>
+                    <td class="detail-cell">${detail}</td>
+                    <td>
+                        <button onclick="editRow('${uniqueId}')">Editar</button>
+                        <button onclick="deleteRow('${uniqueId}')">Eliminar</button>
+                    </td>
+                `;
+                tableBody.appendChild(newRow);
+
+                // Limpiar los campos para el próximo registro
+                nameInput.value = "";
+                detailInput.value = "";
+
+                // Alternar la posición del formulario después de agregar el registro
+                toggleFormPosition();
+            } else {
+                alert("Por favor, complete ambos campos.");
+            }
+        }
+
+        // Función para editar una fila
+        function editRow(rowId) {
+            const row = document.querySelector(`.${rowId}`);
+            const nameCell = row.querySelector(".name-cell");
+            const detailCell = row.querySelector(".detail-cell");
+
+            document.getElementById(`newName-${rowId}`).value = nameCell.textContent;
+            document.getElementById(`newDetail-${rowId}`).value = detailCell.textContent;
+
+            // Eliminar la fila de la tabla si se está editando
+            row.remove();
+        }
+
+        // Función para eliminar una fila
+        function deleteRow(rowId) {
+            const row = document.querySelector(`.${rowId}`);
+            row.remove(); // Eliminar la fila
+        }
+
+        // Inicializar la fila de formulario
+        toggleFormPosition(); // Coloca la fila de formulario al inicio o al final cuando cargue la página
+    </script>
+</body>
+</html>
