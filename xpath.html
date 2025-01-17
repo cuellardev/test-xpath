@@ -10,7 +10,7 @@
 <body>
     <h1>Formulario Dinámico para Pruebas de XPath</h1>
 
-    <form id="dynamicForm">
+    <form id="name">
         <h2>Datos Personales</h2>
         <div id="personalDataSection" class="form-section">
             <label for="name">Nombre Completo:</label>
@@ -110,7 +110,7 @@
                 section.className = `form-section-${generateUUID()}`; // Cambiar clase
             });
 
-            const inputs = document.querySelectorAll("input, select, button");
+            const inputs = document.querySelectorAll("input, select, button,form");
             inputs.forEach(input => {
                 input.id = `input-${generateUUID()}`; // Cambiar ID de los inputs
                 input.className = `input-${generateUUID()}`; // Cambiar clase
